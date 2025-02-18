@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suivi des Matériels</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Suivi des Matériels</h1>
+    <label>Nom du Matériel : <input type="text" id="nomMateriel"></label>
+    <label>Numéro de Série : <input type="text" id="numeroSerie"></label>
+    <label>Date de Vérification : <input type="date" id="dateVerification"></label>
+    <button onclick="ajouterMateriel()">Ajouter Matériel</button>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Numéro de Série</th>
+                <th>Date de Vérification</th>
+                <th>QR Code</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+    </table>
+
+    <script src="script.js"></script>
+</body>
+</html>
