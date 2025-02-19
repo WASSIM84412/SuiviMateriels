@@ -4,29 +4,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Suivi des Matériels</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <h1>Suivi des Matériels</h1>
-    <label>Nom du Matériel : <input type="text" id="nomMateriel"></label>
-    <label>Numéro de Série : <input type="text" id="numeroSerie"></label>
-    <label>Date de Vérification : <input type="date" id="dateVerification"></label>
-    <button onclick="ajouterMateriel()">Ajouter Matériel</button>
-
-    <table>
+    <div class="form-container">
+        <input type="text" id="nomMateriel" placeholder="Nom du Matériel">
+        <input type="text" id="numeroSerie" placeholder="Numéro de Série">
+        <input type="text" id="nomTechnicien" placeholder="Nom du Technicien">
+        <input type="date" id="dateVerification">
+        <button id="ajouterMateriel">Ajouter Matériel</button>
+    </div>
+    
+    <table id="materielsTable">
         <thead>
+            <tr>
+                <th><input type="text" class="filter" data-column="0" placeholder="Filtrer..."></th>
+                <th><input type="text" class="filter" data-column="1" placeholder="Filtrer..."></th>
+                <th><input type="text" class="filter" data-column="2" placeholder="Filtrer..."></th>
+                <th><input type="text" class="filter" data-column="3" placeholder="Filtrer..."></th>
+                <th>Actions</th>
+            </tr>
             <tr>
                 <th>Nom</th>
                 <th>Numéro de Série</th>
+                <th>Nom du Technicien</th>
                 <th>Date de Vérification</th>
-                <th>QR Code</th>
                 <th>Actions</th>
             </tr>
         </thead>
-        <tbody id="tableBody"></tbody>
+        <tbody>
+            <!-- Les matériels seront ajoutés ici dynamiquement -->
+        </tbody>
     </table>
-
+    
     <script src="script.js"></script>
 </body>
 </html>
+
