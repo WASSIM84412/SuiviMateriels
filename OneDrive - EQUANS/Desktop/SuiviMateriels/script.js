@@ -1,13 +1,11 @@
 document.addEventListener("DOMContentLoaded", () => {
     const tableBody = document.querySelector("#materielsTable tbody");
     const addButton = document.querySelector("#ajouterMateriel");
-
     // Charger les données stockées
     function loadData() {
         const savedData = JSON.parse(localStorage.getItem("materiels")) || [];
         savedData.forEach(item => addRow(item.nom, item.numeroSerie, item.nomTechnicien, item.dateVerification));
     }
-
     // Sauvegarder les données
     function saveData() {
         const rows = document.querySelectorAll("#materielsTable tbody tr");
@@ -23,7 +21,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         localStorage.setItem("materiels", JSON.stringify(data));
     }
-
     function addRow(nom, numeroSerie, nomTechnicien, dateVerification) {
         const row = document.createElement("tr");
         row.innerHTML = `
@@ -39,7 +36,6 @@ document.addEventListener("DOMContentLoaded", () => {
         tableBody.appendChild(row);
         saveData();
     }
-
     addButton.addEventListener("click", () => {
         const nom = document.querySelector("#nomMateriel").value.trim();
         const numeroSerie = document.querySelector("#numeroSerie").value.trim();
@@ -54,22 +50,18 @@ document.addEventListener("DOMContentLoaded", () => {
             document.querySelector("#dateVerification").value = "";
         }
     });
-
     tableBody.addEventListener("click", (event) => {
         if (event.target.classList.contains("supprimer")) {
             event.target.closest("tr").remove();
             saveData();
         }
-        
         if (event.target.classList.contains("modifier")) {
             const row = event.target.closest("tr");
-            const cells = row.querySelectorAll("td");
-            
+            const cells = row.querySelectorAll("td"); 
             const nom = prompt("Modifier le nom", cells[0].textContent);
             const numeroSerie = prompt("Modifier le numéro de série", cells[1].textContent);
             const nomTechnicien = prompt("Modifier le technicien", cells[2].textContent);
             const dateVerification = prompt("Modifier la date de vérification", cells[3].textContent);
-            
             if (nom && numeroSerie && nomTechnicien && dateVerification) {
                 cells[0].textContent = nom;
                 cells[1].textContent = numeroSerie;
@@ -79,7 +71,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
     });
-
     document.querySelectorAll(".filter").forEach(input => {
         input.addEventListener("keyup", function() {
             const columnIndex = this.dataset.column;
@@ -90,6 +81,5 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         });
     });
-    
     loadData();
 });
