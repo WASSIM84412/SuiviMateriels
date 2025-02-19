@@ -1,92 +1,95 @@
-document.addEventListener("DOMContentLoaded", function () {
-    chargerDonnees();
-});
+document.addEventListener("DOMContentLoaded", () => {
+    const tableBody = document.querySelector("#materielsTable tbody");
+    const addButton = document.querySelector("#ajouterMateriel");
 
-function ajouterMateriel() {
-    let nom = document.getElementById("nomMateriel").value;
-    let numero = document.getElementById("numeroSerie").value;
-    let date = document.getElementById("dateVerification").value;
-
-    if (!nom || !numero || !date) {
-        alert("Veuillez remplir tous les champs !");
-        return;
+    // Charger les données stockées
+    function loadData() {
+        const savedData = JSON.parse(localStorage.getItem("materiels")) || [];
+        savedData.forEach(item => addRow(item.nom, item.numeroSerie, item.nomTechnicien, item.dateVerification));
     }
 
-    let materiel = { nom, numero, date };
-    let materiels = JSON.parse(localStorage.getItem("materiels")) || [];
-    materiels.push(materiel);
-    localStorage.setItem("materiels", JSON.stringify(materiels));
+    // Sauvegarder les données
+    function saveData() {
+        const rows = document.querySelectorAll("#materielsTable tbody tr");
+        const data = [];
+        rows.forEach(row => {
+            const cells = row.querySelectorAll("td");
+            data.push({
+                nom: cells[0].textContent,
+                numeroSerie: cells[1].textContent,
+                nomTechnicien: cells[2].textContent,
+                dateVerification: cells[3].textContent
+            });
+        });
+        localStorage.setItem("materiels", JSON.stringify(data));
+    }
 
-    chargerDonnees();
-}
-
-function chargerDonnees() {
-    let tableBody = document.getElementById("tableBody");
-    tableBody.innerHTML = "";
-    let materiels = JSON.parse(localStorage.getItem("materiels")) || [];
-
-    materiels.forEach((materiel, index) => {
-        let tr = document.createElement("tr");
-
-        tr.innerHTML = `
-            <td>${materiel.nom}</td>
-            <td>${materiel.numero}</td>
-            <td>${materiel.date}</td>
-            <td id="qrcode-${index}"></td>
+    function addRow(nom, numeroSerie, nomTechnicien, dateVerification) {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td>${nom}</td>
+            <td>${numeroSerie}</td>
+            <td>${nomTechnicien}</td>
+            <td>${dateVerification}</td>
             <td>
-                <button onclick="modifierMateriel(${index})">Modifier</button>
-                <button onclick="supprimerMateriel(${index})">Supprimer</button>
+                <button class="modifier">Modifier</button>
+                <button class="supprimer">Supprimer</button>
             </td>
         `;
+        tableBody.appendChild(row);
+        saveData();
+    }
 
-        tableBody.appendChild(tr);
+    addButton.addEventListener("click", () => {
+        const nom = document.querySelector("#nomMateriel").value.trim();
+        const numeroSerie = document.querySelector("#numeroSerie").value.trim();
+        const nomTechnicien = document.querySelector("#nomTechnicien").value.trim();
+        const dateVerification = document.querySelector("#dateVerification").value;
 
-        let qr = new QRCode(document.getElementById(`qrcode-${index}`), {
-            text: `index.html?id=${materiel.numero}`,
-            width: 60,
-            height: 60
+        if (nom && numeroSerie && nomTechnicien && dateVerification) {
+            addRow(nom, numeroSerie, nomTechnicien, dateVerification);
+            document.querySelector("#nomMateriel").value = "";
+            document.querySelector("#numeroSerie").value = "";
+            document.querySelector("#nomTechnicien").value = "";
+            document.querySelector("#dateVerification").value = "";
+        }
+    });
+
+    tableBody.addEventListener("click", (event) => {
+        if (event.target.classList.contains("supprimer")) {
+            event.target.closest("tr").remove();
+            saveData();
+        }
+        
+        if (event.target.classList.contains("modifier")) {
+            const row = event.target.closest("tr");
+            const cells = row.querySelectorAll("td");
+            
+            const nom = prompt("Modifier le nom", cells[0].textContent);
+            const numeroSerie = prompt("Modifier le numéro de série", cells[1].textContent);
+            const nomTechnicien = prompt("Modifier le technicien", cells[2].textContent);
+            const dateVerification = prompt("Modifier la date de vérification", cells[3].textContent);
+            
+            if (nom && numeroSerie && nomTechnicien && dateVerification) {
+                cells[0].textContent = nom;
+                cells[1].textContent = numeroSerie;
+                cells[2].textContent = nomTechnicien;
+                cells[3].textContent = dateVerification;
+                saveData();
+            }
+        }
+    });
+
+    document.querySelectorAll(".filter").forEach(input => {
+        input.addEventListener("keyup", function() {
+            const columnIndex = this.dataset.column;
+            const filterValue = this.value.toLowerCase();
+            document.querySelectorAll("#materielsTable tbody tr").forEach(row => {
+                const cellText = row.cells[columnIndex].textContent.toLowerCase();
+                row.style.display = cellText.includes(filterValue) ? "" : "none";
+            });
         });
     });
-}
-
-function supprimerMateriel(index) {
-    let materiels = JSON.parse(localStorage.getItem("materiels")) || [];
-    materiels.splice(index, 1);
-    localStorage.setItem("materiels", JSON.stringify(materiels));
-    chargerDonnees();
-}
-
-function modifierMateriel(index) {
-    let materiels = JSON.parse(localStorage.getItem("materiels")) || [];
-    let materiel = materiels[index];
-
-    document.getElementById("nomMateriel").value = materiel.nom;
-    document.getElementById("numeroSerie").value = materiel.numero;
-    document.getElementById("dateVerification").value = materiel.date;
-
-    supprimerMateriel(index);
-}
-
-function afficherMateriel() {
-    let urlParams = new URLSearchParams(window.location.search);
-    let id = urlParams.get("id");
-
-    if (id) {
-        let materiels = JSON.parse(localStorage.getItem("materiels")) || [];
-        let materiel = materiels.find(m => m.numero === id);
-
-        if (materiel) {
-            document.body.innerHTML = `
-                <h1>Détails du Matériel</h1>
-                <p><strong>Nom :</strong> ${materiel.nom}</p>
-                <p><strong>Numéro de Série :</strong> ${materiel.numero}</p>
-                <p><strong>Date de Vérification :</strong> ${materiel.date}</p>
-                <a href="index.html">Retour</a>
-            `;
-        } else {
-            document.body.innerHTML = `<h1>Matériel introuvable</h1><a href="index.html">Retour</a>`;
-        }
-    }
-}
-
-afficherMateriel();
+    
+    loadData();
+});
